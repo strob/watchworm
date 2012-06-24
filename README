@@ -1,0 +1,5 @@
+numm/opencv-based worm tracking
+
+live-code to refine filters:
+
+% numm-run blobs.py path/to/video.mp4
