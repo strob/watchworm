@@ -1,3 +1,5 @@
+USAGE = "python blobs.py (dump|preview) path/to/worm.avi [path/to/worm.avi [path ...]]"
+
 import cv2
 import numm
 import numpy
@@ -69,8 +71,16 @@ class Pipeline:
         return self.tracker.traces
 
     def run(self):
-        pass
-
+        while True:
+            try:
+                fr = self.advance()
+            except StopIteration:
+                break
+            fr = self.filter(fr)
+            fr = self.threshold(fr)
+            self.contour(fr)
+        traces = self.prune()
+        return traces
 
 
 class Trace:
@@ -163,5 +173,25 @@ def mouse_in(type, px, py, button):
     _offy = int(py*(_h-240))
 
 if __name__=='__main__':
-    # TODO: either run on- or offline analysis depending on arguments
-    pass
+    import sys
+    if sys.argv[1] == 'dump':
+        import csv
+        for src in sys.argv[2:]:
+            path = src + '.csv'
+            writer = csv.writer(open(path, 'w'))
+            writer.writerow(['worm', 'frame', 'circle', 'x', 'y', 'r'])
+
+            p = Pipeline(src)
+            traces = p.run()
+
+            for t_idx,tr in enumerate(traces):
+                for c_idx, l_idx in enumerate(sorted(tr.store.keys())):
+                    pt = tr.store[l_idx]
+                    writer.writerow([t_idx, l_idx, c_idx, pt[0], pt[1], pt[2]])
+
+    elif sys.argv[1] == 'preview':
+        sys.argv = sys.argv[1:] # shift args so they're as numm-run would expect
+        numm.run(**globals())
+    else:
+        print USAGE
+        sys.exit(1)
