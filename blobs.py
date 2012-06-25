@@ -33,6 +33,8 @@ class Pipeline:
 
         self.reader = numm.video_frames(self.src, height=480)
 
+        self.tracker = CircleTracker()
+
     def advance(self):
         return self.reader.next()
 
@@ -59,13 +61,12 @@ class Pipeline:
         contours, hierarchy = cv2.findContours(fr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         circles = [cv2.minEnclosingCircle(contours[idx]) for idx in range(len(contours))]
         circles = numpy.array([[pt[0],pt[1],r] for pt,r in circles])
+        self.tracker.process(circles)
         return circles
 
-    def continuity(self, contours):
-        pass
-
     def prune(self):
-        pass
+        # XXX: join & split to correct for errors, eliminate small runs, etc.
+        return self.tracker.traces
 
     def run(self):
         pass
@@ -74,14 +75,14 @@ class Pipeline:
 
 class Trace:
     def __init__(self, idx, payload):
-        self._last = idx
+        self.idx = idx
         self.store = {idx:payload}
     def peek(self):
-        return self.store[self._last]
+        return self.store[self.idx]
     def push(self, idx, payload):
-        self._last = idx
+        self.idx = idx
         self.store[idx] = payload
-    def sorted(self):
+    def asarray(self):
         return numpy.array([self.store[X] for X in sorted(self.store.keys())])
 
 class Traces(list):
@@ -91,13 +92,12 @@ class Traces(list):
         self.append(Trace(idx,payload))
 
 class CircleTracker:
-    def __init__(self, min_r=3, dist=5):
+    def __init__(self, min_r=3, dist=10):
         self.traces = Traces()
         self.dist = dist
         self.min_r = min_r
         self.idx = 0
     def process(self, circles):
-        print self.idx
         arr = self.traces.asarray()
         for circle in circles:
             if circle[2] < self.min_r:
@@ -110,7 +110,6 @@ class CircleTracker:
             else:
                 self.traces.makenew(self.idx,circle)
         self.idx += 1
-
 
 # inline numm sketch for previewing with all params
 pipe = None
@@ -147,10 +146,14 @@ def video_out(a):
         fr = pipe.threshold(fr)
         blit_sliver(a, fr, 2, 3)
         circles = pipe.contour(fr)
-        for c in circles:
-            #print c
-            if c[2] > 5:
-                cv2.circle(a, (int(c[0]-_offx), int(c[1]-_offy)), int(c[2]), (255,0,0))
+        traces = pipe.prune()
+        for tr in traces:
+            path = tr.asarray()[:,:2] - [_offx, _offy]
+            path = path.astype(numpy.int32)
+            cv2.polylines(a, [path], False, (0,255,0))
+
+            latest = tr.peek()
+            cv2.circle(a, (int(latest[0]-_offx), int(latest[1]-_offy)), int(latest[2]), (255,0,0))
 
 
 def mouse_in(type, px, py, button):
