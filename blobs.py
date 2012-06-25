@@ -179,15 +179,15 @@ if __name__=='__main__':
         for src in sys.argv[2:]:
             path = src + '.csv'
             writer = csv.writer(open(path, 'w'))
-            writer.writerow(['worm', 'frame', 'circle', 'x', 'y', 'r'])
+            writer.writerow(['worm', 'frame', 'x', 'y', 'r'])
 
             p = Pipeline(src)
             traces = p.run()
 
             for t_idx,tr in enumerate(traces):
-                for c_idx, l_idx in enumerate(sorted(tr.store.keys())):
+                for l_idx in sorted(tr.store.keys()):
                     pt = tr.store[l_idx]
-                    writer.writerow([t_idx, l_idx, c_idx, pt[0], pt[1], pt[2]])
+                    writer.writerow([t_idx, l_idx, pt[0], pt[1], pt[2]])
 
     elif sys.argv[1] == 'preview':
         sys.argv = sys.argv[1:] # shift args so they're as numm-run would expect
