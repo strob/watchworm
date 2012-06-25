@@ -2,4 +2,10 @@ numm/opencv-based worm tracking
 
 live-code to refine filters:
 
-% numm-run blobs.py path/to/video.mp4
+% numm-run blobs.py path/to/video.avi
+
+or dump to a CSV:
+
+% python blobs.py dump path/to/video.avi [path/to/video.avi [path ...]]
+
+(a csv will be created in the same directory as the video)
