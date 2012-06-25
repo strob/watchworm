@@ -12,8 +12,7 @@ def composite(src):
     else:
         print 'generating composite (this may take a sec ...)'
         acc = None
-        for idx,fr in enumerate(numm.video_frames(uid, height=480)):
-            print idx
+        for idx,fr in enumerate(numm.video_frames(src, height=480)):
             if acc is None:
                 acc = fr.astype(int)
             else:
