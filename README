@@ -2,7 +2,8 @@ meteor/opencv-based worm tracking.
 
 the user-interface is implemented in javascript through meteor,
 while the analysis is undertaken server-side in python and opencv,
-using mongodb as a common layer between.
+using mongodb as a common layer between. they are split into
+the `watch' and `worms' components, respectively.
 
 we maintain two database collections:
 

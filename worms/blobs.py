@@ -33,7 +33,7 @@ class Pipeline:
         self.comp = composite(self.src)
         self.comp = self.comp.mean(axis=2)
 
-        self.reader = video_frames(self.src, height=480)
+        self.reader = video_frames(self.src)#, height=480)
 
         self.tracker = CircleTracker()
 

@@ -5,6 +5,10 @@ import time
 import blobs
 import os
 import names
+import numpy
+import Image
+import StringIO
+import base64
 
 class Monglue:
     DATA_DIR = 'data'
@@ -43,9 +47,22 @@ class Monglue:
 
         print "GOT REQUEST !!! THE SYSTEM WORKS !!!"
 
-        #pipeline = blobs.Pipeline(os.path.join(DATA_DIR, recording['filename']))
+        #pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, recording['filename']))
 
         self.request.save(req)
+
+    def newRecording(self, filename):
+        pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, filename))
+
+        # important frames
+        preview = pipeline.advance()
+        comp = pipeline.comp.astype(numpy.uint8)
+
+        doc = {"filename": filename,
+               "preview": np2base64(preview),
+               "comp": np2base64(comp)}
+
+        self.recording.save(doc)        
 
     def generateName(self):
         name = None
@@ -56,6 +73,24 @@ class Monglue:
                 name = names.next()
         return name
 
+def np2base64(np):
+    im = Image.fromarray(np)
+    sin = StringIO.StringIO()
+    sout = StringIO.StringIO()
+    im.save(sin, format='png')
+    sin.seek(0)
+    base64.encode(sin, sout)
+    sout.seek(0)
+    return "data:image/png;base64,"+sout.read()
+
 if __name__=='__main__':
+    import sys
+
     m = Monglue()
-    m.requestLoop()
+
+    if sys.argv[1] == 'add':
+        for p in sys.argv[2:]:
+            m.newRecording(p)
+
+    else:
+        m.requestLoop()

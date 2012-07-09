@@ -29,23 +29,7 @@ if (Meteor.is_client) {
     }
 }
 
-if (Meteor.is_server) {
-
-    Meteor.startup(function () {
-        // prepopulate recordings
-        if (Recording.find().count() === 0) {
-            ["ck410.mov",
-             "CK423 d1 q1.avi",
-             "CK423 d1 q2.avi",
-             "CK565 d1 q1.avi",
-             "CK565 d1 q2.avi",
-             "n2.avi",
-             "worm capture 2.avi",
-             "worm capture 3.avi",
-             "worm capture 51.avi"].forEach(function(name) {
-                 Recording.insert({filename: name});
-             });
-        }
-    });
-
-}
+// if (Meteor.is_server) {
+//     Meteor.startup(function () {
+//     });
+// }
