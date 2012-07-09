@@ -1,11 +1,34 @@
-numm/opencv-based worm tracking
+meteor/opencv-based worm tracking.
 
-live-code to refine filters:
+the user-interface is implemented in javascript through meteor,
+while the analysis is undertaken server-side in python and opencv,
+using mongodb as a common layer between.
 
-% numm-run blobs.py path/to/video.avi
+we maintain two database collections:
 
-or dump to a CSV:
+`recording'
+ - filename
+ - preview                      # base64-encoded PNG at time0 
+ - composite                    # average frame
 
-% python blobs.py dump path/to/video.avi [path/to/video.avi [path ...]]
+`worm'
+ - recording
+ - contourFlow                  # [[t,[[x,y], ...]], ...] (8kb/frame)
+ - centerFlow                   # [[t,x,y], ...]
+ - amountOfMotion               # px
+ - avgSpeed                     # px/second
+ - bb                           # [x,y,w,h] (at time0)
+ - contour                      # [[x,y], ...] (at time0)
 
-(a csv will be created in the same directory as the video)
+and use mongodb as a poor-man's message queue to communicate between
+meteor/javascript and python, through a third collection:
+
+`request':
+ - recording
+ - bb
+ - unprocessed
+ - contour
+ - contourOk
+ - trackingOk
+
+which allows user-guided identification of worms within a recording.

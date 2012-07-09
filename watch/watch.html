@@ -1,0 +1,41 @@
+<head>
+  <title>watchworm</title>
+</head>
+
+<body>
+  {{> watchworm}}
+</body>
+
+<template name="watchworm">
+  <h1>WORMS!</h1>
+
+  {{#each recordings}}
+    {{> recordingtab}}
+  {{/each}}
+
+  {{#if selected_recording}}
+    {{#with selected_recording}}
+    {{> recording}}
+    {{/with}}
+  {{/if}}
+
+  {{#unless selected_recording}}
+    <div class="none">Click a recording to select</div>
+  {{/unless}}
+</template>
+
+<template name="recordingtab">
+    <div class='recname'>{{filename}}</div>
+</template>
+
+<template name="recording">
+  <h1>{{filename}}</h1>
+  <input type="button" value="PLEASE DO SOMETHING" />
+  {{#each worms}}
+    {{> worm}}
+  {{/each}}
+</template>
+
+<template name="worm">
+  WORM!<br/>
+</template>
