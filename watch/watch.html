@@ -21,12 +21,12 @@
   {{/if}}
 
   {{#unless selected_recording}}
-    <div class="none">Click a recording to select</div>
+    <div class="postscript">Click a recording to select</div>
   {{/unless}}
 </template>
 
 <template name="recordingtab">
-    <div>{{name}}</div>
+    <div class="{{selected}}">{{name}}</div>
 </template>
 
 <template name="recording">
