@@ -44,10 +44,12 @@ class Monglue:
         req['unprocessed'] = False
 
         recording = self.db[req['recording']]
+        bb = req["bb"]
 
         print "GOT REQUEST !!! THE SYSTEM WORKS !!!"
+        print bb
 
-        #pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, recording['filename']))
+        # pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, recording['filename']))
 
         self.request.save(req)
 
@@ -92,7 +94,7 @@ if __name__=='__main__':
 
     m = Monglue()
 
-    if sys.argv[1] == 'add':
+    if len(sys.argv) > 1 and sys.argv[1] == 'add':
         for p in sys.argv[2:]:
             m.newRecording(p)
 
