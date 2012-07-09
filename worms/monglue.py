@@ -58,7 +58,11 @@ class Monglue:
         preview = pipeline.advance()
         comp = pipeline.comp.astype(numpy.uint8)
 
+        # remove extension
+        name = '.'.join(filename.split('.')[:-1])
+
         doc = {"filename": filename,
+               "name": name,
                "preview": np2base64(preview),
                "comp": np2base64(comp)}
 
