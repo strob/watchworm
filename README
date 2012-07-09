@@ -8,14 +8,17 @@ the `watch' and `worms' components, respectively.
 we maintain two database collections:
 
 `recording'
+ - name
  - filename
  - preview                      # base64-encoded PNG at time0 
  - composite                    # average frame
 
 `worm'
+ - name
  - recording
- - contourFlow                  # [[t,[[x,y], ...]], ...] (8kb/frame)
- - centerFlow                   # [[t,x,y], ...]
+ - contourFlow                  # [[x,y], ...] (8kb/frame)
+ - centerFlow                   # [[x,y], ...]
+ - timings                      # [t, ...]
  - amountOfMotion               # px
  - avgSpeed                     # px/second
  - bb                           # [x,y,w,h] (at time0)

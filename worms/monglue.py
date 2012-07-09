@@ -1,6 +1,7 @@
 # glue between mongodb and python
 
 import pymongo
+from pymongo.objectid import ObjectId
 import time
 import blobs
 import os
@@ -29,8 +30,8 @@ class Monglue:
             while cursor.alive:
                 try:
                     doc = cursor.next()
-                    self._handleReq(doc)
                     print doc
+                    self._handleReq(doc)
                     
                 except StopIteration:
                     time.sleep(1)
@@ -43,13 +44,20 @@ class Monglue:
 
         req['unprocessed'] = False
 
-        recording = self.db[req['recording']]
+        recording = self.recording.find_one({'_id':ObjectId(req['recording'])})
         bb = req["bb"]
 
-        print "GOT REQUEST !!! THE SYSTEM WORKS !!!"
-        print bb
+        pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, recording['filename']))
 
-        # pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, recording['filename']))
+        doc = pipeline.runBB(*bb)
+        doc['name'] = self.generateName()
+        doc['bb'] = bb
+        doc['recording'] = req['recording']
+        doc['contour'] = doc['contourFlow'][0]
+
+        self.worm.insert(doc)
+
+        req['trackingOk'] = True
 
         self.request.save(req)
 

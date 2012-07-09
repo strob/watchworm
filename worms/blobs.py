@@ -27,6 +27,8 @@ class Pipeline:
     BLUR = 5                    # None, or 1-N
     THRESHOLD = 75              # 0-255
 
+    FPS = 15                    # XXX: DERIVE FROM VIDEO, OR RESAMPLE VIDEO
+
     def __init__(self, src):
         self.src = src
 
@@ -69,6 +71,81 @@ class Pipeline:
     def prune(self):
         # XXX: join & split to correct for errors, eliminate small runs, etc.
         return self.tracker.traces
+
+    def runBB(self, x, y, w, h):
+        "return path of worm contained within bounding box"
+
+        timings = []
+        contourlist = []
+        centers = []
+
+        idx = -1
+
+        while True:
+            try:
+                ofr = self.advance()
+            except StopIteration:
+                break
+
+            idx += 1
+
+            # every second
+            if idx % self.FPS != 0:
+                continue
+
+            fr = self.filter(ofr)
+
+            # crop to BB
+            fr = fr[y:y+h,x:x+w]
+            fr = self.threshold(fr)
+
+            # find largest contour within BB
+            contours, hierarchy = cv2.findContours(fr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            area = numpy.array([cv2.contourArea(X) for X in contours])
+
+            print '%d contours, mean %.2f, max %d' % (len(area), area.mean(), area.max())
+
+            contour = contours[area.argmax()].reshape((-1,2))
+
+            # restore contour to image coordinages
+            contour[:,0] += x
+            contour[:,1] += y
+
+            contourlist.append(contour)
+
+            # cast to int or else dtype is unserializable [<numpy.int64>, <numpy.int64>]
+            center = [int((contour[:,0].min() + contour[:,0].max())/2),
+                      int((contour[:,1].min() + contour[:,1].max())/2)]
+
+            centers.append(center)
+
+            timings.append(idx/float(self.FPS))
+
+            # adjust bounding box for next iteration
+            # PADDING specifies the size of the BB at the next iteration
+            PADDING = 50
+
+            x = max(0, contour[:,0].min() - PADDING)
+            w = min(ofr.shape[1], contour[:,0].max() + PADDING) - x
+            
+            y = max(0, contour[:,1].min() - PADDING)
+            h = min(ofr.shape[0], contour[:,1].max() + PADDING) - y
+
+            print x,y,w,h
+
+        c_arr = numpy.array(centers)
+        movements = c_arr[1:] - c_arr[:-1]
+        distances= numpy.hypot(movements[:,0], movements[:,1])
+        amountOfMotion = sum(distances)
+        avgSpeed = amountOfMotion / (idx / float(self.FPS))
+
+        doc = {"contourFlow": [X.tolist() for X in contourlist],
+               "centerFlow": centers,
+               "amountOfMotion": amountOfMotion,
+               "avgSpeed": avgSpeed,
+               "timings": timings}
+
+        return doc
 
     def run(self):
         while True:
