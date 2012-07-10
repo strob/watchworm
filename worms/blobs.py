@@ -74,10 +74,9 @@ class Pipeline:
 
     def contour(self, fr):
         contours, hierarchy = cv2.findContours(fr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        circles = [cv2.minEnclosingCircle(contours[idx]) for idx in range(len(contours))]
-        circles = numpy.array([[pt[0],pt[1],r] for pt,r in circles])
-        self.tracker.process(circles)
-        return circles
+
+        self.tracker.process(contours)
+        return contours
 
     def prune(self):
         # XXX: join & split to correct for errors, eliminate small runs, etc.
@@ -182,41 +181,48 @@ class Pipeline:
 
 
 class Trace:
-    def __init__(self, idx, payload):
+    def __init__(self, idx, payload, contour):
         self.idx = idx
         self.store = {idx:payload}
+        self.contour = {idx:contour}
     def peek(self):
         return self.store[self.idx]
-    def push(self, idx, payload):
+    def push(self, idx, payload, contour):
         self.idx = idx
         self.store[idx] = payload
+        self.contour[idx] = contour
     def asarray(self):
         return numpy.array([self.store[X] for X in sorted(self.store.keys())])
 
 class Traces(list):
     def asarray(self):
         return numpy.array([X.peek() for X in self])
-    def makenew(self,idx,payload):
-        self.append(Trace(idx,payload))
+    def makenew(self,idx,payload,contour):
+        self.append(Trace(idx,payload,contour))
 
 class CircleTracker:
-    def __init__(self, min_r=10, dist=30):
+    def __init__(self, min_a=10, dist=30, weight=[2,2,1,5]):
         self.traces = Traces()
         self.dist = dist
-        self.min_r = min_r
+        self.min_a = min_a
+        self.weight = numpy.array(weight)
+        self.weight *= (len(self.weight) / float(self.weight.sum())) # normalize
         self.idx = 0
-    def process(self, circles):
+    def process(self, contours):
+        circles = [(cv2.minEnclosingCircle(X),cv2.contourArea(X)) for X in contours]
+        circles = numpy.array([[pt[0],pt[1],r,a] for (pt,r),a in circles])
+
         arr = self.traces.asarray()
-        for circle in circles:
-            if circle[2] < self.min_r:
+        for idx,circle in enumerate(circles):
+            if circle[3] < self.min_a:
                 continue
             d_arr = None
             if len(arr) > 0:
-                d_arr = numpy.hypot(*(arr - circle).T)
+                d_arr = abs((arr - circle)*self.weight).mean(axis=1)
             if d_arr is not None and d_arr.min() < self.dist:
-                self.traces[d_arr.argmin()].push(self.idx,circle)
+                self.traces[d_arr.argmin()].push(self.idx,circle,contours[idx])
             else:
-                self.traces.makenew(self.idx,circle)
+                self.traces.makenew(self.idx,circle,contours[idx])
         self.idx += 1
 
 def preview(src):
