@@ -5,6 +5,7 @@ import cv2
 from cvframes import video_frames
 import numpy
 import os
+import scipy.ndimage
 
 def composite(src):
     path = src + '.composite.npy'
@@ -24,6 +25,7 @@ def composite(src):
 
 class Pipeline:
     ENHANCE_MOTION = 1.0        # 0 is no effect, 1 is full effect
+    ENHANCE_EDGES = 0.2
     BLUR = 5                    # None, or 1-N
     THRESHOLD = 65              # 0-255
 
@@ -52,6 +54,9 @@ class Pipeline:
 
         if self.BLUR > 0:
             cv2.blur(fr, (self.BLUR, self.BLUR), fr)
+
+        edges = scipy.ndimage.sobel(fr, axis=0)
+        fr += self.ENHANCE_EDGES * edges.clip(0,255)
 
         # fill dynamic range
         fr = fr-fr.min()
@@ -227,14 +232,18 @@ def preview(src):
     def setMotion(t):
         print 'set motion', t
         pipe.ENHANCE_MOTION=t/10.0;
+    def setEdges(t):
+        print 'set edges', t
+        pipe.ENHANCE_EDGES=t/10.0;
 
     def setBlur(b):
         print 'set blur', b
         pipe.BLUR=b;
 
     cv2.createTrackbar('threshold', 'threshold', 75, 255, setThreshold)
-    cv2.createTrackbar('blur', 'filter', 5, 20, setBlur)
-    cv2.createTrackbar('motion', 'filter', 5, 15, setMotion)
+    cv2.createTrackbar('motion', 'filter', 10, 25, setMotion)
+    cv2.createTrackbar('blur', 'filter', 5, 25, setBlur)
+    cv2.createTrackbar('edges', 'filter', 2, 25, setEdges)
 
     while True:
         try:
