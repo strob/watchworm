@@ -23,9 +23,9 @@ def composite(src):
         return acc
 
 class Pipeline:
-    # ENHANCE_MOTION = 0        # 0 is none, 1 is normal
+    ENHANCE_MOTION = 1.0        # 0 is no effect, 1 is full effect
     BLUR = 5                    # None, or 1-N
-    THRESHOLD = 75              # 0-255
+    THRESHOLD = 65              # 0-255
 
     FPS = 15                    # XXX: DERIVE FROM VIDEO, OR RESAMPLE VIDEO
 
@@ -44,9 +44,14 @@ class Pipeline:
 
     def filter(self, fr):
         fr = fr.mean(axis=2)
-        fr = (self.comp - fr).clip(0,255)
 
-        cv2.blur(fr, (self.BLUR, self.BLUR), fr)
+        fr2 = 255-fr
+        cp2 = 255-self.comp
+
+        fr = (fr2 - self.ENHANCE_MOTION*cp2).clip(0,255)
+
+        if self.BLUR > 0:
+            cv2.blur(fr, (self.BLUR, self.BLUR), fr)
 
         # fill dynamic range
         fr = fr-fr.min()
@@ -215,6 +220,22 @@ def preview(src):
     cv2.namedWindow("filter")
     cv2.namedWindow("threshold")
 
+    def setThreshold(t):
+        print 'set threshold', t
+        pipe.THRESHOLD=t;
+
+    def setMotion(t):
+        print 'set motion', t
+        pipe.ENHANCE_MOTION=t/10.0;
+
+    def setBlur(b):
+        print 'set blur', b
+        pipe.BLUR=b;
+
+    cv2.createTrackbar('threshold', 'threshold', 75, 255, setThreshold)
+    cv2.createTrackbar('blur', 'filter', 5, 20, setBlur)
+    cv2.createTrackbar('motion', 'filter', 5, 15, setMotion)
+
     while True:
         try:
             fr = pipe.advance()
@@ -225,16 +246,17 @@ def preview(src):
         fr = pipe.filter(fr)
         cv2.imshow("filter", fr)
         fr = pipe.threshold(fr)
+        frview = fr.copy()      # contour is destructive
         circles = pipe.contour(fr)
-        traces = pipe.prune()
-        for tr in traces:
-            path = tr.asarray()[:,:2]
-            path = path.astype(numpy.int32)
-            cv2.polylines(fr, [path], False, (0,255,0))
+        # traces = pipe.tracker.traces #pipe.prune()
+        for latest in circles:
+            # path = tr.asarray()[:,:2]
+            # path = path.astype(numpy.int32)
+            # cv2.polylines(frview, [path], False, (0,255,0))
 
-            latest = tr.peek()
-            cv2.circle(fr, (int(latest[0]), int(latest[1])), int(latest[2]), (255,0,0))
-        cv2.imshow("threshold", fr)
+            # latest = tr.peek()
+            cv2.circle(frview, (int(latest[0]), int(latest[1])), int(latest[2]), (255,0,0))
+        cv2.imshow("threshold", frview)
         if cv2.waitKey(100) == 27: # escape
             break
 
