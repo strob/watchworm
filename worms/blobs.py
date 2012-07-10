@@ -202,6 +202,23 @@ class Trace:
 
         return zip(idxes[const], di[const])
 
+    def fills(self):
+        "inverse of gaps"
+        idxes = numpy.array(sorted(self.store.keys()))
+        gaps = self.gaps()
+
+        mindex = idxes.min()
+        maxdex = idxes.max()
+
+        fills = []
+        start = mindex
+        for st,dur in gaps:
+            fills.append((start, st-start))
+            start = st+dur
+        fills.append((start, maxdex-start))
+        return fills
+        
+
     def asarray(self):
         return numpy.array([self.store[X] for X in sorted(self.store.keys())])
 
