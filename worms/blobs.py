@@ -189,7 +189,7 @@ class Traces(list):
         self.append(Trace(idx,payload))
 
 class CircleTracker:
-    def __init__(self, min_r=3, dist=10):
+    def __init__(self, min_r=10, dist=30):
         self.traces = Traces()
         self.dist = dist
         self.min_r = min_r

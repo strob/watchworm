@@ -104,7 +104,7 @@ if (Meteor.is_client) {
     Template.recording.events = {
         'click #addnew': function() {
             select_worm_bb();
-        },
+        }
     }
 }
 
