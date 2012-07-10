@@ -55,7 +55,8 @@ class Pipeline:
         if self.BLUR > 0:
             cv2.blur(fr, (self.BLUR, self.BLUR), fr)
 
-        edges = scipy.ndimage.sobel(fr, axis=0)
+        edges = numpy.hypot(scipy.ndimage.sobel(fr, axis=0),
+                      scipy.ndimage.sobel(fr, axis=1))
         fr += self.ENHANCE_EDGES * edges.clip(0,255)
 
         # fill dynamic range
