@@ -191,6 +191,17 @@ class Trace:
         self.idx = idx
         self.store[idx] = payload
         self.contour[idx] = contour
+
+    def gaps(self, minlen=3):
+        idxes = numpy.array(sorted(self.store.keys()))
+        di = idxes[1:] - idxes[:-1]
+
+        const = di >= minlen
+
+        print 'found %d gaps' % (sum(const))
+
+        return zip(idxes[const], di[const])
+
     def asarray(self):
         return numpy.array([self.store[X] for X in sorted(self.store.keys())])
 
