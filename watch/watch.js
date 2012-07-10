@@ -4,6 +4,45 @@ Request = new Meteor.Collection("request");
 
 if (Meteor.is_client) {
 
+    (function($) {
+        $.fn.wormhole = function() {
+            this.each(function(idx, wdiv) {
+
+                if($(wdiv).data('$hole'))
+                    return
+
+                var worm = Worm.findOne({_id:$(wdiv).attr('id')});
+                var c0 = worm.circleFlow[0];
+
+                var imoff = $('img').offset();
+
+                var $hole = $('<div>')
+                    .offset({left: imoff.left + c0[0] - c0[2]/2,
+                             top: imoff.top + c0[1] - c0[2]/2})
+                    .css({position: 'absolute'})
+                    .width(c0[2])
+                    .height(c0[2])
+                    .addClass('hole')
+                    .appendTo($(document.body));
+
+                $(wdiv).data('$hole', $hole);
+                
+
+            });
+
+            this.mouseover(function() {
+                $(this).data('$hole').addClass('selected');
+            });
+            this.mouseout(function() {
+                $('.hole').removeClass('selected');
+            });
+
+            return this;
+        }
+    })(jQuery);
+
+
+
     function select_worm_bb() {
         // XXX: awful!
         // XXX: extend jquery with a worm-box object (?)

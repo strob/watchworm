@@ -53,3 +53,12 @@ h1 {
 
 #addnew {
 }
+
+.hole {
+  border: 3px solid #00ff00;
+  position: absolute;
+}
+
+.hole.selected {
+  border: 3px solid #ff0000;    
+}

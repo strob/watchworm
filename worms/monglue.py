@@ -76,7 +76,21 @@ class Monglue:
                "preview": np2base64(preview),
                "comp": np2base64(comp)}
 
-        self.recording.save(doc)        
+        _id = self.recording.save(doc)
+        
+        doc["_id"] = _id
+        return doc
+
+    def analyzeRecording(self, rec):
+        pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, rec['filename']))
+        traces = pipeline.run()
+        for worm in traces:
+            doc = {'recording': rec['_id'],
+                   'name': self.generateName(),
+                   'timings': [X/float(pipeline.FPS) for X in worm.store.keys()],
+                   'circleFlow': worm.asarray().astype(int).tolist()}
+            print doc['name']
+            self.worm.insert(doc)
 
     def generateName(self):
         name = None
@@ -104,7 +118,8 @@ if __name__=='__main__':
 
     if len(sys.argv) > 1 and sys.argv[1] == 'add':
         for p in sys.argv[2:]:
-            m.newRecording(p)
+            rec = m.newRecording(p)
+            m.analyzeRecording(rec)
 
     else:
         m.requestLoop()

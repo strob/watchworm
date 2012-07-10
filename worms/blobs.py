@@ -70,7 +70,17 @@ class Pipeline:
 
     def prune(self):
         # XXX: join & split to correct for errors, eliminate small runs, etc.
-        return self.tracker.traces
+
+        # eliminate short-duration traces, eg. 1/2-length of max
+        nFrames = numpy.array([len(X.store.keys()) for X in self.tracker.traces])
+        maxLen = nFrames.max()
+
+        out = [x[1] for x in filter(lambda x: x[0] > maxLen/2, zip(nFrames, self.tracker.traces))]
+
+        print 'eliminated %d short-duration traces' % (len(self.tracker.traces)-len(out))
+        return out
+
+        #return self.tracker.traces
 
     def runBB(self, x, y, w, h):
         "return path of worm contained within bounding box"
@@ -191,7 +201,7 @@ class CircleTracker:
                 continue
             d_arr = None
             if len(arr) > 0:
-                d_arr = abs(arr - circle).mean(axis=1) # XXX: euclidian distance, r^2, etc..
+                d_arr = numpy.hypot(*(arr - circle).T)
             if d_arr is not None and d_arr.min() < self.dist:
                 self.traces[d_arr.argmin()].push(self.idx,circle)
             else:
