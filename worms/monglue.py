@@ -1,7 +1,11 @@
 # glue between mongodb and python
 
 import pymongo
-from pymongo.objectid import ObjectId
+try:
+    from pymongo.objectid import ObjectId
+except ImportError:
+    def ObjectId(x):
+        return x
 import time
 import blobs
 import os
