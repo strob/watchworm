@@ -59,7 +59,8 @@ class Monglue:
 
         req['trackingOk'] = True
 
-        self.request.save(req)
+        self.request.update({"_id": req["_id"]}, {"unprocessed": False})
+
 
     def newRecording(self, filename):
         pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, filename))
