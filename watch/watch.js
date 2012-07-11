@@ -31,10 +31,12 @@ if (Meteor.is_client) {
 
         Worm.find({recording: rec_id}).forEach(function(worm) {
             var c0 = worm.circleFlow[0];
+            var mot =Math.floor(worm.avgSpeed);
             var $hole = $('<div>')
                 .offset({left: c0[0] - c0[2],
                          top:  c0[1] - c0[2]})
                 .css({position: 'absolute'})
+                .html(mot)
                 .width(c0[2]*2)
                 .height(c0[2]*2)
                 .addClass('hole')
@@ -49,39 +51,39 @@ if (Meteor.is_client) {
 
     };
 
-    function select_worm_bb() {
-        // XXX: awful!
-        // XXX: extend jquery with a worm-box object (?)
+    // function select_worm_bb() {
+    //     // XXX: awful!
+    //     // XXX: extend jquery with a worm-box object (?)
 
-        $("#preview").mousedown(function(ev) {
-            ev.preventDefault();
+    //     $("#preview").mousedown(function(ev) {
+    //         ev.preventDefault();
 
-            var x = ev.pageX - $(this).offset().left;
-            var y = ev.pageY - $(this).offset().top;
+    //         var x = ev.pageX - $(this).offset().left;
+    //         var y = ev.pageY - $(this).offset().top;
 
-            $(this).data("down", [x, y]);
+    //         $(this).data("down", [x, y]);
 
-            $("#preview").mouseup(function(ev) {
-                var x = ev.pageX - $(this).offset().left;
-                var y = ev.pageY - $(this).offset().top;
+    //         $("#preview").mouseup(function(ev) {
+    //             var x = ev.pageX - $(this).offset().left;
+    //             var y = ev.pageY - $(this).offset().top;
 
 
-                var x0 = Math.min($(this).data("down")[0], x);
-                var x1 = Math.max($(this).data("down")[0], x);
-                var y0 = Math.min($(this).data("down")[1], y);
-                var y1 = Math.max($(this).data("down")[1], y);
+    //             var x0 = Math.min($(this).data("down")[0], x);
+    //             var x1 = Math.max($(this).data("down")[0], x);
+    //             var y0 = Math.min($(this).data("down")[1], y);
+    //             var y1 = Math.max($(this).data("down")[1], y);
 
-                // Make a new Request to find a worm.
-                Request.insert({bb: [x0, y0, x1-x0, y1-y0],
-                                recording: Session.get("selected_recording"),
-                                unprocessed: true});
+    //             // Make a new Request to find a worm.
+    //             Request.insert({bb: [x0, y0, x1-x0, y1-y0],
+    //                             recording: Session.get("selected_recording"),
+    //                             unprocessed: true});
 
-                $("#preview").unbind("mouseup");
-            });
+    //             $("#preview").unbind("mouseup");
+    //         });
 
-            $("#preview").unbind("mousedown");
-        });
-    }
+    //         $("#preview").unbind("mousedown");
+    //     });
+    // }
 
     Template.watchworm.recordings = function() {
         return Recording.find();
@@ -107,11 +109,11 @@ if (Meteor.is_client) {
         return Worm.find({recording: this._id});
     };
 
-    Template.recording.events = {
-        'click #addnew': function() {
-            select_worm_bb();
-        }
-    }
+    // Template.recording.events = {
+    //     'click #addnew': function() {
+    //         select_worm_bb();
+    //     }
+    // }
 
     var RW = new RecordingWorms();
     RW.contextuallyDraw();

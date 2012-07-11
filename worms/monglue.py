@@ -63,7 +63,8 @@ class Monglue:
 
         req['trackingOk'] = True
 
-        self.request.save(req)
+        self.request.update({"_id": req["_id"]}, {"unprocessed": False})
+
 
     def newRecording(self, filename):
         pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, filename))
@@ -89,9 +90,18 @@ class Monglue:
         pipeline = blobs.Pipeline(os.path.join(self.DATA_DIR, rec['filename']))
         traces = pipeline.run()
         for worm in traces:
+
+            c_arr = worm.asarray()[:,:2]
+            movements = c_arr[1:] - c_arr[:-1]
+            distances= numpy.hypot(movements[:,0], movements[:,1])
+            amountOfMotion = sum(distances)
+            avgSpeed = amountOfMotion / (pipeline.idx / float(pipeline.FPS))
+
             doc = {'recording': rec['_id'],
                    'name': self.generateName(),
                    'timings': [X/float(pipeline.FPS) for X in worm.store.keys()],
+                   'amountOfMotion': amountOfMotion,
+                   'avgSpeed': avgSpeed,
                    'circleFlow': worm.asarray().astype(int).tolist()}
             print doc['name']
             self.worm.insert(doc)
