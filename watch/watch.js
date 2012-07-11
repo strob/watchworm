@@ -1,6 +1,7 @@
 Worm = new Meteor.Collection("worm");
 Recording = new Meteor.Collection("recording");
 Request = new Meteor.Collection("request");
+Preview = new Meteor.Collection("preview");
 
 if (Meteor.is_client) {
 
@@ -20,14 +21,14 @@ if (Meteor.is_client) {
         if(!rec_id)
             return;
 
-        var rec = Recording.findOne({_id: rec_id});
-
-        if(!rec)
-            return;
+        var prev = Preview.findOne({recording: rec_id});
 
         var $wrm = $("<div>")
             .css({position: "absolute"});
-        var $img = $("<img>", {src: rec.preview, id:"preview"});
+        var $img = $("<img>", {id:"preview"});
+        if(prev) {
+            $img.attr("src", prev.preview);
+        }
 
         Worm.find({recording: rec_id}).forEach(function(worm) {
             var c0 = worm.circleFlow[0];
@@ -40,6 +41,7 @@ if (Meteor.is_client) {
                 .width(c0[2]*2)
                 .height(c0[2]*2)
                 .addClass('hole')
+                .addClass(worm._id)
                 .appendTo($wrm);
         });
 
@@ -108,6 +110,17 @@ if (Meteor.is_client) {
     Template.recording.worms = function () {
         return Worm.find({recording: this._id});
     };
+
+    Template.worm.events = {
+        'mouseover': function() {
+            $('.'+this._id).addClass('selected');
+        },
+        'mouseout': function() {
+            $('.'+this._id).removeClass('selected');
+        }
+
+
+    }
 
     // Template.recording.events = {
     //     'click #addnew': function() {

@@ -18,6 +18,8 @@ class Monglue:
         self.db = pymongo.Connection(server, port)[db]
         self.worm = self.db['worm']
         self.recording = self.db['recording']
+        self.preview = self.db['preview']
+        self.comp = self.db['comp']
 
         if not 'request' in self.db.collection_names():
             self.db.create_collection('request', capped=True, size=10000)
@@ -73,11 +75,14 @@ class Monglue:
         name = '.'.join(filename.split('.')[:-1])
 
         doc = {"filename": filename,
-               "name": name,
-               "preview": np2base64(preview),
-               "comp": np2base64(comp)}
+               "name": name}
 
         _id = self.recording.save(doc)
+
+        self.preview.save({"recording": _id,
+                           "preview": np2base64(preview)})
+        self.comp.save({"recording": _id,
+                        "comp": np2base64(comp)})
         
         doc["_id"] = _id
         return doc
