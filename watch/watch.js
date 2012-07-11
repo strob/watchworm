@@ -4,44 +4,50 @@ Request = new Meteor.Collection("request");
 
 if (Meteor.is_client) {
 
-    (function($) {
-        $.fn.wormhole = function() {
-            this.each(function(idx, wdiv) {
+    var RecordingWorms = function() {
+        // context-aware recording visualization
+        this.$el = $('<div>');
+    };
+    RecordingWorms.prototype.contextuallyDraw = function() {
+        var that = this;
 
-                if($(wdiv).data('$hole'))
-                    return
+        var ctx = new Meteor.deps.Context();
+        ctx.on_invalidate(function() { that.contextuallyDraw(); });
+        ctx.run(function() { that.draw(); })
+    };
+    RecordingWorms.prototype.draw = function() {
+        var rec_id = Session.get("selected_recording");
+        if(!rec_id)
+            return;
 
-                var worm = Worm.findOne({_id:$(wdiv).attr('id')});
-                var c0 = worm.circleFlow[0];
+        var rec = Recording.findOne({_id: rec_id});
 
-                var imoff = $('img').offset();
+        if(!rec)
+            return;
 
-                var $hole = $('<div>')
-                    .offset({left: imoff.left + c0[0] - c0[2]/2,
-                             top: imoff.top + c0[1] - c0[2]/2})
-                    .css({position: 'absolute'})
-                    .width(c0[2])
-                    .height(c0[2])
-                    .addClass('hole')
-                    .appendTo($(document.body));
+        var $wrm = $("<div>")
+            .css({position: "absolute"});
+        var $img = $("<img>", {src: rec.preview, id:"preview"});
 
-                $(wdiv).data('$hole', $hole);
-                
+        Worm.find({recording: rec_id}).forEach(function(worm) {
+            var c0 = worm.circleFlow[0];
+            var $hole = $('<div>')
+                .offset({left: c0[0] - c0[2],
+                         top:  c0[1] - c0[2]})
+                .css({position: 'absolute'})
+                .width(c0[2]*2)
+                .height(c0[2]*2)
+                .addClass('hole')
+                .appendTo($wrm);
+        });
 
-            });
+        this.$el
+            .empty()
+            .append($wrm)
+            .append($img)
+            .appendTo($(document.body));
 
-            this.mouseover(function() {
-                $(this).data('$hole').addClass('selected');
-            });
-            this.mouseout(function() {
-                $('.hole').removeClass('selected');
-            });
-
-            return this;
-        }
-    })(jQuery);
-
-
+    };
 
     function select_worm_bb() {
         // XXX: awful!
@@ -106,6 +112,9 @@ if (Meteor.is_client) {
             select_worm_bb();
         }
     }
+
+    var RW = new RecordingWorms();
+    RW.contextuallyDraw();
 }
 
 // if (Meteor.is_server) {
