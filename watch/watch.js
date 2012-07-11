@@ -31,10 +31,12 @@ if (Meteor.is_client) {
 
         Worm.find({recording: rec_id}).forEach(function(worm) {
             var c0 = worm.circleFlow[0];
+            var mot =Math.floor(worm.avgSpeed);
             var $hole = $('<div>')
                 .offset({left: c0[0] - c0[2],
                          top:  c0[1] - c0[2]})
                 .css({position: 'absolute'})
+                .html(mot)
                 .width(c0[2]*2)
                 .height(c0[2]*2)
                 .addClass('hole')
