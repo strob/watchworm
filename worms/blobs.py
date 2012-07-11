@@ -40,8 +40,10 @@ class Pipeline:
         self.reader = video_frames(self.src)#, height=480)
 
         self.tracker = CircleTracker()
+        self.idx = 0
 
     def advance(self):
+        self.idx += 1
         return self.reader.next()
 
     def filter(self, fr):
@@ -233,8 +235,9 @@ class CircleTracker:
         self.traces = Traces()
         self.dist = dist
         self.min_a = min_a
-        self.weight = numpy.array(weight)
+        self.weight = numpy.array(weight).astype(float)
         self.weight *= (len(self.weight) / float(self.weight.sum())) # normalize
+
         self.idx = 0
     def process(self, contours):
         circles = [(cv2.minEnclosingCircle(X),cv2.contourArea(X)) for X in contours]
@@ -290,16 +293,17 @@ def preview(src):
         fr = pipe.filter(fr)
         cv2.imshow("filter", fr)
         fr = pipe.threshold(fr)
-        frview = fr.copy()      # contour is destructive
-        circles = pipe.contour(fr)
+        frview = numpy.zeros((fr.shape[0], fr.shape[1], 3), numpy.uint8)
+        frview[:] = fr.reshape((fr.shape[0], fr.shape[1], -1))
+        contours = pipe.contour(fr)
         # traces = pipe.tracker.traces #pipe.prune()
-        for latest in circles:
+        for idx,contour in enumerate(contours):
             # path = tr.asarray()[:,:2]
             # path = path.astype(numpy.int32)
             # cv2.polylines(frview, [path], False, (0,255,0))
 
             # latest = tr.peek()
-            cv2.circle(frview, (int(latest[0]), int(latest[1])), int(latest[2]), (255,0,0))
+            cv2.drawContours(frview, contours, idx, (0,0,255))
         cv2.imshow("threshold", frview)
         if cv2.waitKey(100) == 27: # escape
             break
