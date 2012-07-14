@@ -5,34 +5,49 @@ while the analysis is undertaken server-side in python and opencv,
 using mongodb as a common layer between. they are split into
 the `watch' and `worms' components, respectively.
 
-we maintain two database collections:
+we maintain several database collections:
 
 `recording'
  - name
  - filename
+
+several one-to-one supplements to the recording:
+
+`preview'
+ - recording
  - preview                      # base64-encoded PNG at time0 
+
+`composite'
+ - recording
  - composite                    # average frame
 
+a many-to-one relation of worms to recording:
+
 `worm'
- - name
  - recording
- - contourFlow                  # [[x,y], ...] (8kb/frame)
- - centerFlow                   # [[x,y], ...]
- - timings                      # [t, ...]
+ - name
+ - bb                           # [x,y,w,h] (at time0)
  - amountOfMotion               # px
  - avgSpeed                     # px/second
- - bb                           # [x,y,w,h] (at time0)
- - contour                      # [[x,y], ...] (at time0)
 
-and use mongodb as a poor-man's message queue to communicate between
-meteor/javascript and python, through a third collection:
+and several one-to-one mappings to worms:
+
+`contourFlow'
+ - worm
+ - contourFlow                  # [[x,y], ...] (8kb/frame)
+
+`centerFlow'
+ - worm
+ - centerFlow                   # [[x,y], ...]
+
+
+finally, we use mongodb as a poor-man's message queue to communicate
+between meteor/javascript and python, through a `request' collection:
+(NB: celerymq seems to support mongodb as a backend -- consider its use?)
 
 `request':
- - recording
- - bb
- - unprocessed
- - contour
- - contourOk
- - trackingOk
+ - started                      # starts False
+ - status
+ - finished                     # also initialized to False
+ - payload                      # information passed to python
 
-which allows user-guided identification of worms within a recording.

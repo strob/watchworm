@@ -10,6 +10,7 @@ import numpy
 import Image
 import StringIO
 import base64
+import cv2
 
 class Monglue:
     DATA_DIR = 'data'
@@ -78,6 +79,7 @@ class Monglue:
                "name": name}
 
         _id = self.recording.save(doc)
+        print filename, _id
 
         self.preview.save({"recording": _id,
                            "preview": np2base64(preview)})
@@ -92,20 +94,22 @@ class Monglue:
         traces = pipeline.run()
         for worm in traces:
 
+            bb = cv2.boundingRect(worm.contour[min(worm.contour.keys())])
+
             c_arr = worm.asarray()[:,:2]
             movements = c_arr[1:] - c_arr[:-1]
             distances= numpy.hypot(movements[:,0], movements[:,1])
             amountOfMotion = sum(distances)
             avgSpeed = amountOfMotion / (pipeline.idx / float(pipeline.FPS))
-
             doc = {'recording': rec['_id'],
                    'name': self.generateName(),
-                   'timings': [X/float(pipeline.FPS) for X in worm.store.keys()],
                    'amountOfMotion': amountOfMotion,
                    'avgSpeed': avgSpeed,
-                   'circleFlow': worm.asarray().astype(int).tolist()}
+                   'bb': bb}
             print doc['name']
             self.worm.insert(doc)
+            
+            # 'circleFlow': worm.asarray().astype(int).tolist()}
 
     def generateName(self):
         name = None
