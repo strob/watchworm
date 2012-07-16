@@ -24,9 +24,9 @@ def composite(src):
         return acc
 
 class Pipeline:
-    ENHANCE_MOTION = 1.0        # 0 is no effect, 1 is full effect
-    ENHANCE_EDGES = 0.2
-    BLUR = 5                    # None, or 1-N
+    ENHANCE_MOTION = 0.0
+    ENHANCE_EDGES = 0.0
+    BLUR = 2
 
     FPS = 15                    # XXX: DERIVE FROM VIDEO, OR RESAMPLE VIDEO
 
@@ -270,9 +270,9 @@ def preview(src):
         print 'set blur', b
         pipe.BLUR=b;
 
-    cv2.createTrackbar('motion', 'filter', 10, 25, setMotion)
-    cv2.createTrackbar('blur', 'filter', 5, 25, setBlur)
-    cv2.createTrackbar('edges', 'filter', 2, 25, setEdges)
+    cv2.createTrackbar('motion', 'filter', int(pipe.ENHANCE_MOTION*10), 25, setMotion)
+    cv2.createTrackbar('blur', 'filter', int(pipe.BLUR), 25, setBlur)
+    cv2.createTrackbar('edges', 'filter', int(pipe.ENHANCE_EDGES*10), 25, setEdges)
 
     while True:
         try:
