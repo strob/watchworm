@@ -27,7 +27,6 @@ class Pipeline:
     ENHANCE_MOTION = 1.0        # 0 is no effect, 1 is full effect
     ENHANCE_EDGES = 0.2
     BLUR = 5                    # None, or 1-N
-    THRESHOLD = 65              # 0-255
 
     FPS = 15                    # XXX: DERIVE FROM VIDEO, OR RESAMPLE VIDEO
 
@@ -70,13 +69,10 @@ class Pipeline:
         return fr
 
     def threshold(self, fr):
-        fr[fr>self.THRESHOLD] = 255
-        fr[fr<self.THRESHOLD] = 0
-        return fr
+        return cv2.adaptiveThreshold((255-fr), 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 45, 45)
 
     def contour(self, fr):
         contours, hierarchy = cv2.findContours(fr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
         self.tracker.process(contours)
         return contours
 
@@ -263,10 +259,6 @@ def preview(src):
     cv2.namedWindow("filter")
     cv2.namedWindow("threshold")
 
-    def setThreshold(t):
-        print 'set threshold', t
-        pipe.THRESHOLD=t;
-
     def setMotion(t):
         print 'set motion', t
         pipe.ENHANCE_MOTION=t/10.0;
@@ -278,7 +270,6 @@ def preview(src):
         print 'set blur', b
         pipe.BLUR=b;
 
-    cv2.createTrackbar('threshold', 'threshold', 75, 255, setThreshold)
     cv2.createTrackbar('motion', 'filter', 10, 25, setMotion)
     cv2.createTrackbar('blur', 'filter', 5, 25, setBlur)
     cv2.createTrackbar('edges', 'filter', 2, 25, setEdges)
