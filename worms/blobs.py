@@ -252,6 +252,17 @@ class CircleTracker:
                 self.traces.makenew(self.idx,circle,contours[idx])
         self.idx += 1
 
+    def save(self, filepath):
+        import pickle
+        pickle.dump(self, open(filepath, 'w'))
+
+    @classmethod
+    def fromfile(cls, filepath):
+        print 'cls', cls
+        print 'fp', filepath
+        import pickle
+        return pickle.load(open(filepath))
+
 def preview(src):
     pipe = Pipeline(src)
 
@@ -306,15 +317,17 @@ if __name__=='__main__':
         for src in sys.argv[2:]:
             path = src + '.csv'
             writer = csv.writer(open(path, 'w'))
-            writer.writerow(['worm', 'frame', 'x', 'y', 'r'])
+            writer.writerow(['worm', 'frame', 'x', 'y', 'r', 'a'])
 
             p = Pipeline(src)
             traces = p.run()
 
+            p.tracker.save(src + '.traces.pkl')
+
             for t_idx,tr in enumerate(traces):
                 for l_idx in sorted(tr.store.keys()):
                     pt = tr.store[l_idx]
-                    writer.writerow([t_idx, l_idx, pt[0], pt[1], pt[2]])
+                    writer.writerow([t_idx, l_idx, pt[0], pt[1], pt[2], pt[3]])
 
     elif sys.argv[1] == 'preview':
         src = sys.argv[2]
