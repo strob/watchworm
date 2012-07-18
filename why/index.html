@@ -15,6 +15,18 @@ Recording.prototype.render = function(mode,type) {
     return $d;
 };
 
+var PathADP45 = function(id, spec) {
+    OP.Objection.call(this, id, spec);  
+};
+PathADP45.prototype = new OP.Objection;
+
+var PathMOT60 = function(id, spec) {
+    OP.Objection.call(this, id, spec);  
+};
+PathMOT60.prototype = new OP.Objection;
+
+
+
 var STILL_MODES = {"First frame": ".first.png",
                    "ADP45 threshold": ".contoursADP45.png",
                    "MOT60 threshold": ".contoursMOT60.png",
@@ -71,7 +83,10 @@ MultiRec.prototype.render = function(mode,type) {
 
 var MR = null;
 
-OP.Subjectification.load({'Recording.json': Recording}, function() {
+OP.Subjectification.load(
+    {'Recording.json': Recording,
+     'PathADP45.json': PathADP45, 
+     'PathMOT60.json': PathMOT60 }, function() {
 
     MR = new MultiRec(OP.Subjectification.all(Recording));
     document.body.appendChild(MR.$el);
