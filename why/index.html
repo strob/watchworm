@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>why watch worms?</title>
+    <script src="oppressive.js"></script>
+  </head>
+  <body>
+    <script>
+var Recording = function(id, spec) {
+    OP.Objection.call(this, id, spec);
+};
+Recording.prototype = new OP.Objection;
+Recording.prototype.render = function() {
+    var $d = document.createElement('div');
+    $d.innerHTML = this.filename;
+    return $d;
+};
+
+OP.Subjectification.load({'Recording.json': Recording}, function() {
+
+    OP.Subjectification.all(Recording).forEach(function(rec) {
+        document.body.appendChild(rec.render());
+    });
+
+});
+
+    </script>
+  </body>
+</html>
