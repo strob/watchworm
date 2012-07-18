@@ -4,6 +4,10 @@ COMPOSITES = $(patsubst %,%.comp.png,$(RECORDINGS))
 data/%.avi.comp.png: generate_composite.py data/%.avi
 	python $^ $@
 
+WEBMS = $(patsubst %,%.webm,$(RECORDINGS))
+data/%.avi.webm: webm.py data/%.avi
+	python $^ $@
+
 FIRSTFRAMES = $(patsubst %,%.first.png,$(RECORDINGS))
 data/%.avi.first.png: first_frame.py data/%.avi 
 	python $^ $@
@@ -15,7 +19,7 @@ data/%.avi.contoursADP45.pkl: contours45.py data/%.avi
 
 CONTOUR60 = $(patsubst %,%.contoursMOT60.pkl,$(RECORDINGS))
 CONTOUR60P = $(patsubst %,%.contoursMOT60.png,$(RECORDINGS))
-data/%.avi.contoursMOT60.pkl: contours60.py data/%.avi data/%.comp.png
+data/%.avi.contoursMOT60.pkl: contours60.py data/%.avi data/%.avi.comp.png
 	python $^ $@
 
 
@@ -24,7 +28,7 @@ $(JSONS) : $(RECORDINGS) jsonification.py
 	python jsonification.py
 
 GEN = $(COMPOSITES) $(CONTOUR45) $(CONTOUR45P) $(CONTOUR60) $(CONTOUR60P) \
-      $(JSONS) $(FIRSTFRAMES)
+      $(JSONS) $(FIRSTFRAMES) $(WEBMS)
 
 .PHONY : clean
 clean : 
