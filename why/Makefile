@@ -1,20 +1,35 @@
 RECORDINGS = $(wildcard data/*.avi)
 
 COMPOSITES = $(patsubst %,%.comp.png,$(RECORDINGS))
-data/%.avi.comp.png: data/%.avi generate_composite.py
-	python generate_composite.py $< $@
+data/%.avi.comp.png: generate_composite.py data/%.avi
+	python $^ $@
 
-CONTOURS = $(patsubst %,%.contours.pkl,$(RECORDINGS))
-data/%.avi.contours.pkl: data/%.avi dump_contours.py
-	python dump_contours.py $< $@
+FIRSTFRAMES = $(patsubst %,%.first.png,$(RECORDINGS))
+data/%.avi.first.png: first_frame.py data/%.avi 
+	python $^ $@
+
+CONTOUR45 = $(patsubst %,%.contoursADP45.pkl,$(RECORDINGS))
+CONTOUR45P = $(patsubst %,%.contoursADP45.png,$(RECORDINGS))
+data/%.avi.contoursADP45.pkl: contours45.py data/%.avi
+	python $^ $@
+
+CONTOUR60 = $(patsubst %,%.contoursMOT60.pkl,$(RECORDINGS))
+CONTOUR60P = $(patsubst %,%.contoursMOT60.png,$(RECORDINGS))
+data/%.avi.contoursMOT60.pkl: contours60.py data/%.avi data/%.comp.png
+	python $^ $@
+
 
 JSONS = Recording.json
 $(JSONS) : $(RECORDINGS) jsonification.py
 	python jsonification.py
 
-.PHONY : all
-all : $(COMPOSITES) $(CONTOURS) $(JSONS)
+GEN = $(COMPOSITES) $(CONTOUR45) $(CONTOUR45P) $(CONTOUR60) $(CONTOUR60P) \
+      $(JSONS) $(FIRSTFRAMES)
 
 .PHONY : clean
 clean : 
-	rm $(COMPOSITES) $(CONTOURS) $(JSONS)
+	rm $(GEN)
+
+.PHONY : all
+all : $(GEN)
+

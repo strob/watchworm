@@ -9,17 +9,52 @@ var Recording = function(id, spec) {
     OP.Objection.call(this, id, spec);
 };
 Recording.prototype = new OP.Objection;
-Recording.prototype.render = function() {
-    var $d = document.createElement('div');
-    $d.innerHTML = this.filename;
+Recording.prototype.render = function(mode) {
+    var $d = document.createElement('img');
+    $d.src = "data/" + this.filename + mode;
     return $d;
 };
 
+var STILL_MODES = {"First frame": ".first.png",
+                   "ADP45 threshold": ".contoursADP45.png",
+                   "MOT60 threshold": ".contoursMOT60.png",
+                   "Composite frame": ".comp.png"}
+
+var MultiRec = function(recs) {
+    this.recs = recs;
+    this.$el = document.createElement('div');
+    this.$all = document.createElement('div');
+    $sel = document.createElement('select');
+
+    var modes = [];
+    for(var key in STILL_MODES) {
+        var $opt = document.createElement('option');
+        $opt.innerHTML = key;
+        $sel.appendChild($opt);
+        modes.push(key);
+    };
+    var that = this;
+    $sel.onchange = function(ev) {
+        that.render(modes[$sel.selectedIndex]);
+    }
+    this.$el.appendChild($sel);
+    this.$el.appendChild(this.$all);
+    this.render('First frame');
+};
+MultiRec.prototype.render = function(mode) {
+    var $a = this.$all;
+    $a.innerHTML = "";
+    this.recs.forEach(function(r) {
+        $a.appendChild(r.render(STILL_MODES[mode]));
+    });
+};
+
+var MR = null;
+
 OP.Subjectification.load({'Recording.json': Recording}, function() {
 
-    OP.Subjectification.all(Recording).forEach(function(rec) {
-        document.body.appendChild(rec.render());
-    });
+    MR = new MultiRec(OP.Subjectification.all(Recording));
+    document.body.appendChild(MR.$el);
 
 });
 
