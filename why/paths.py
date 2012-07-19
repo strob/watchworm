@@ -70,4 +70,4 @@ def path(src, dest):
 
 if __name__=='__main__':
     import sys
-    path(sys.argv[1], sys.argv[2])
+    path(sys.argv[1], sys.argv[-1])
