@@ -31,12 +31,37 @@ PATHS60P = $(patsubst %,%.pathMOT60.png,$(RECORDINGS))
 data/%.avi.pathMOT60.pkl: paths.py data/%.avi.contoursMOT60.pkl data/%.avi.contoursMOT60.png
 	python $^ $@
 
+CONTOUR50 = $(patsubst %,%.contoursMBL50.pkl,$(RECORDINGS))
+CONTOUR50P = $(patsubst %,%.contoursMBL50.png,$(RECORDINGS))
+data/%.avi.contoursMBL50.pkl: contours50.py data/%.avi data/%.avi.comp.png
+	python $^ $@
+
+
+PATHS50 = $(patsubst %,%.pathMBL50.pkl,$(RECORDINGS))
+PATHS50P = $(patsubst %,%.pathMBL50.png,$(RECORDINGS))
+data/%.avi.pathMBL50.pkl: paths.py data/%.avi.contoursMBL50.pkl data/%.avi.contoursMBL50.png
+	python $^ $@
+
+CONTOUR75 = $(patsubst %,%.contoursMBL75.pkl,$(RECORDINGS))
+CONTOUR75P = $(patsubst %,%.contoursMBL75.png,$(RECORDINGS))
+data/%.avi.contoursMBL75.pkl: contours75.py data/%.avi data/%.avi.comp.png
+	python $^ $@
+
+
+PATHS75 = $(patsubst %,%.pathMBL75.pkl,$(RECORDINGS))
+PATHS75P = $(patsubst %,%.pathMBL75.png,$(RECORDINGS))
+data/%.avi.pathMBL75.pkl: paths.py data/%.avi.contoursMBL75.pkl data/%.avi.contoursMBL75.png
+	python $^ $@
+
+
 JSONS = Recording.json
 $(JSONS) : $(RECORDINGS) jsonification.py
 	python jsonification.py
 
 GEN = $(COMPOSITES) $(CONTOUR45) $(CONTOUR45P) $(CONTOUR60) $(CONTOUR60P) \
-      $(JSONS) $(FIRSTFRAMES) $(WEBMS) $(PATHS45) $(PATHS60) $(PATHS60P)
+      $(CONTOUR50) $(CONTOUR50P) $(CONTOUR75) $(CONTOUR75P) \
+      $(JSONS) $(FIRSTFRAMES) $(WEBMS) \
+      $(PATHS45) $(PATHS45P) $(PATHS60) $(PATHS60P) $(PATHS50) $(PATHS50P) $(PATHS75) $(PATHS75P)
 
 .PHONY : clean
 clean : 

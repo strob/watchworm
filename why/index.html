@@ -30,13 +30,19 @@ PathMOT60.prototype = new OP.Objection;
 var STILL_MODES = {"First frame": ".first.png",
                    "ADP45 threshold": ".contoursADP45.png",
                    "MOT60 threshold": ".contoursMOT60.png",
+                   "MBL50 threshold": ".contoursMBL50.png",
+                   "MBL75 threshold": ".contoursMBL75.png",
                    "Composite frame": ".comp.png",
                    "ADP45 path": ".pathADP45.png",
                    "MOT60 path": ".pathMOT60.png",
+                   "MBL50 path": ".pathMBL50.png",
+                   "MBL75 path": ".pathMBL75.png",
                   }
 var VIDEO_MODES = {"Video": ".webm",
                    "ADP45 threshold": ".contoursADP45.webm",
-                   "MOT60 threshold": ".contoursMOT60.webm" }
+                   "MOT60 threshold": ".contoursMOT60.webm", 
+                   "MBL50 threshold": ".contoursMBL50.webm", 
+                   "MBL75 threshold": ".contoursMBL75.webm" }
 
 var MultiRec = function(recs) {
     this.recs = recs;
