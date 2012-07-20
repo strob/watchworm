@@ -55,7 +55,7 @@ data/%.avi.pathMBL75.pkl: paths.py data/%.avi.contoursMBL75.pkl data/%.avi.conto
 
 
 JSONS = Recording.json
-$(JSONS) : $(RECORDINGS) jsonification.py
+$(JSONS) : $(RECORDINGS) jsonification.py $(PATHS45) $(PATHS50) $(PATHS60) $(PATHS75)
 	python jsonification.py
 
 GEN = $(COMPOSITES) $(CONTOUR45) $(CONTOUR45P) $(CONTOUR60) $(CONTOUR60P) \

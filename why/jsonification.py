@@ -7,19 +7,10 @@ import numpy
 rec = {}
 p45 = {}
 p60 = {}
-
-# XXX: A lot of analysis seems to be happening here!
-
-SMOOTHING_WINDOW_LEN = 10
-def smooth(path):
-    window = numpy.kaiser(SMOOTHING_WINDOW_LEN, 4)
-    window = window / window.sum()
-    y = numpy.convolve(path[:,0], window, mode='valid')
-    x = numpy.convolve(path[:,1], window, mode='valid')
-    return numpy.array([y,x]).T
+p50 = {}
+p75 = {}
 
 def motion(path):
-    # should be smoothed
     dists = path[1:] - path[:-1]
     dists = numpy.hypot(*dists.T)
     return sum(dists)
@@ -30,12 +21,13 @@ if __name__=='__main__':
         base = os.path.basename(f)
         rec[base] = {"filename": os.path.basename(f)}
 
-        for string, store in [['ADP45', p45], ['MOT60', p60]]:
+        for string, store in [['ADP45', p45], ['MOT60', p60], ['MBL50', p50], ['MBL75', p75]]:
             paths = pickle.load(open('%s.path%s.pkl' % (f, string)))
-            for idx,path in enumerate(paths):
+            docs = []
+            for idx,(path,smoothed) in enumerate(paths):
                 arr = numpy.array(path)
                 raw_motion = motion(arr[:,:2])
-                smoothed = smooth(arr)
+                # smoothed = smooth(arr)
                 amnt_motion = motion(smoothed)
 
                 distance = numpy.hypot(*(arr[0,:2] - arr[-1,:2]))
@@ -44,6 +36,7 @@ if __name__=='__main__':
 
                 uid = '%s-%s-%d' % (base, string, idx)
                 doc = {"recording": base,
+                       "method": string,
                        "center": path[0][:2],
                        "radius": path[0][2],
                        "area": path[0][3],
@@ -51,9 +44,19 @@ if __name__=='__main__':
                        "motion": amnt_motion,
                        "distance": distance,
                        "speed": avg_speed}
+                docs.append(doc)
                 store[uid] = doc
 
+            # compute recording-wide averages
+            recinfo = {}
 
-    json.dump(p45, open("PathADP45.json", 'w'))
-    json.dump(p60, open("PathMOT60.json", 'w'))
+            nworms = len(paths)
+            recinfo["nworms_"+string] = nworms
+
+            for key in ["radius", "area", "raw_motion", "motion", "distance", "speed"]:
+                recinfo[key+"_"+string] = sum([X[key] for X in docs])/float(nworms)
+            
+            rec[base].update(recinfo)
+            json.dump(store, open("Path%s.json" % (string), 'w'))
+
     json.dump(rec, open("Recording.json", 'w'))

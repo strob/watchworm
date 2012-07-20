@@ -7,6 +7,14 @@ from numm import image2np, np2image
 
 MIN_AREA = 10
 MAX_DIST = 0.1                  # percentage of area
+SMOOTHING_WINDOW_LEN = 25
+
+def smooth(path):
+    window = numpy.kaiser(SMOOTHING_WINDOW_LEN, 4)
+    window = window / window.sum()
+    y = numpy.convolve(path[:,0], window, mode='valid')
+    x = numpy.convolve(path[:,1], window, mode='valid')
+    return numpy.array([y,x]).T
 
 def path(src, dest):
     contours = pickle.load(open(src))
@@ -57,16 +65,24 @@ def path(src, dest):
     mplen = max(plens)
     paths = filter(lambda x: len(x) > mplen/3, paths)
 
+    # smooth paths
+    smoothed = [smooth(numpy.array(X)) for X in paths]
+
     print 'trimmed %d paths to %d' % (len(plens), len(paths))
 
     # save a preview PNG
     fr = 255 - image2np(dest.replace('path', 'contours').replace('.pkl', '.png'))
-    for path in paths:
+    for idx,path in enumerate(paths):
         path = numpy.array(path)[:,:2].astype(numpy.int32)
         cv2.polylines(fr, [path], False, (255, 0, 0))
+
+        # & smoothed
+        path = numpy.array(smoothed[idx]).astype(numpy.int32)
+        cv2.polylines(fr, [path], False, (0, 0, 255))
+
     np2image(fr, dest.replace('.pkl', '.png'))
 
-    pickle.dump(paths, open(dest, 'w'))
+    pickle.dump(zip(paths, smoothed), open(dest, 'w'))
 
 if __name__=='__main__':
     import sys
