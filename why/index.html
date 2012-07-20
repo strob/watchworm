@@ -25,24 +25,56 @@ var PathMOT60 = function(id, spec) {
 };
 PathMOT60.prototype = new OP.Objection;
 
-
+var CONTOUR_MODES = ["ADP45", "MOT60", "MBL50", "MBL75"];
 
 var STILL_MODES = {"First frame": ".first.png",
-                   "ADP45 threshold": ".contoursADP45.png",
-                   "MOT60 threshold": ".contoursMOT60.png",
-                   "MBL50 threshold": ".contoursMBL50.png",
-                   "MBL75 threshold": ".contoursMBL75.png",
-                   "Composite frame": ".comp.png",
-                   "ADP45 path": ".pathADP45.png",
-                   "MOT60 path": ".pathMOT60.png",
-                   "MBL50 path": ".pathMBL50.png",
-                   "MBL75 path": ".pathMBL75.png",
-                  }
-var VIDEO_MODES = {"Video": ".webm",
-                   "ADP45 threshold": ".contoursADP45.webm",
-                   "MOT60 threshold": ".contoursMOT60.webm", 
-                   "MBL50 threshold": ".contoursMBL50.webm", 
-                   "MBL75 threshold": ".contoursMBL75.webm" }
+                   "Composite frame": ".comp.png"}
+var VIDEO_MODES = {"Video": ".webm"}
+
+CONTOUR_MODES.forEach(function(mode) {
+    STILL_MODES[mode+" threshold"] = ".contours"+mode+".png";
+    STILL_MODES[mode+" path"] = ".path"+mode+".png";
+    VIDEO_MODES[mode+" threshold"] = ".contours"+mode+".webm";
+});
+
+var dataTable = function(recs) {
+    var DATA_POINTS = ["speed", "motion", "distance", "radius", "area", "raw_motion", "nworms"];
+    var $el = document.createElement('table');
+    $el.setAttribute('border', 1);
+
+    // heading
+    var $tr = document.createElement('tr');
+    $el.appendChild($tr);
+    var $th = document.createElement('th');
+    $tr.appendChild($th);
+    $th.innerHTML = "recording";
+    CONTOUR_MODES.forEach(function(cmode) {
+        DATA_POINTS.forEach(function(dpoint) {
+            var $th = document.createElement('th');
+            $tr.appendChild($th);
+            $th.innerHTML = dpoint + " (" + cmode + ")";
+        });
+    });
+
+    // body
+    recs.forEach(function(rec) {
+        var $tr = document.createElement('tr');
+        $el.appendChild($tr);
+        var $td = document.createElement('td');
+        $tr.appendChild($td);
+        $td.innerHTML = rec.filename;
+        CONTOUR_MODES.forEach(function(cmode) {
+            DATA_POINTS.forEach(function(dpoint) {
+                var $td = document.createElement('td');
+                $tr.appendChild($td);
+                $td.innerHTML = rec[dpoint + "_" + cmode];
+            });
+        });
+    });
+    
+    return $el;
+};
+
 
 var MultiRec = function(recs) {
     this.recs = recs;
@@ -95,6 +127,7 @@ OP.Subjectification.load(
      'PathMOT60.json': PathMOT60 }, function() {
 
     MR = new MultiRec(OP.Subjectification.all(Recording));
+    document.body.appendChild(dataTable(OP.Subjectification.all(Recording)));
     document.body.appendChild(MR.$el);
 
 });
