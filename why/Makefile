@@ -18,7 +18,7 @@ data/%.avi.contoursADP45.pkl: contours45.py data/%.avi
 	python $^ $@
 
 PATHS45 = $(patsubst %,%.pathADP45.pkl,$(RECORDINGS))
-data/%.avi.pathADP45.pkl: paths.py data/%.avi.contoursADP45.pkl
+data/%.avi.pathADP45.pkl: paths.py data/%.avi.contoursADP45.pkl data/%.avi.contoursADP45.png
 	python $^ $@
 
 CONTOUR60 = $(patsubst %,%.contoursMOT60.pkl,$(RECORDINGS))

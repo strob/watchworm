@@ -65,4 +65,4 @@ def contours(src, dst):
 
 if __name__=='__main__':
     import sys
-    contours(sys.argv[1], sys.argv[2])
+    contours(sys.argv[1], sys.argv[-1])
