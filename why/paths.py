@@ -27,7 +27,7 @@ def path(src, dest):
 
         xyRAI = [[cv2.minEnclosingCircle(X), cv2.contourArea(X)] for X in clist]
         # unpack
-        xyRAI = [[x[0][0][0],x[0][0][1],x[0][0][1],x[1],idx] for x in xyRAI]
+        xyRAI = [[x[0][0][0],x[0][0][1],x[0][1],x[1],idx] for x in xyRAI]
         xyRAI = filter(lambda x: x[3] >= MIN_AREA, xyRAI)
 
         if idx == 0:
