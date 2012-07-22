@@ -13,7 +13,7 @@ data/%.avi.first.png: first_frame.py data/%.avi
 	python $^ $@
 
 CONTOURS = $(patsubst %,%.contours.pkl,$(RECORDINGS))
-data/%.avi.contours.pkl: ruledcontour.py data/%.avi
+data/%.avi.contours.pkl: ruledcontour.py data/%.avi RULES.json 
 	python $^ $@
 
 PATHS = $(patsubst %,%.path.pkl,$(RECORDINGS))
@@ -25,7 +25,7 @@ data/%.avi.showmotion.webm: showmotion.py data/%.avi data/%.avi.contours.webm da
 	python $^ $@
 
 JSONS = Recording.json
-$(JSONS) : $(RECORDINGS) jsonification.py $(PATHS)
+$(JSONS) : jsonification.py $(RECORDINGS) $(PATHS)
 	python $^ $@
 
 GEN = $(COMPOSITES) $(CONTOURS) $(MOT) \

@@ -3,6 +3,7 @@ import json
 import os
 import pickle
 import numpy
+from cvframes import get_fps
 
 rec = {}
 allpaths = {}
@@ -52,10 +53,10 @@ if __name__=='__main__':
         recinfo = {}
 
         nworms = len(paths)
-        recinfo["nworms_"+string] = nworms
+        recinfo["nworms"] = nworms
 
         for key in ["radius", "area", "raw_motion", "motion", "distance", "speed"]:
-            recinfo[key+"_"+string] = sum([X[key] for X in docs])/float(nworms)
+            recinfo[key] = sum([X[key] for X in docs])/float(nworms)
             
         rec[base].update(recinfo)
 

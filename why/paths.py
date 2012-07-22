@@ -5,7 +5,7 @@ import cv2
 import numpy
 from numm import image2np, np2image
 
-MIN_AREA = 10
+MIN_AREA = 15
 MAX_DIST = 0.1                  # percentage of area
 SMOOTHING_WINDOW_LEN = 25
 

@@ -32,10 +32,11 @@ def showmotion(orig, src, paths, dest):
 
         if idx == 0:
             vout = VideoWriter(dest, ofr.shape)
-            fr = numpy.zeros(ofr.shape, dtype=numpy.uint8)
             orig_vout = VideoWriter(dest.replace('showmotion', 'origmotion'), orig_ofr.shape, {"fps": FPS})
-            orig_fr = numpy.zeros(orig_ofr.shape, dtype=numpy.uint8)
 
+        # Generated every frame to give GST time to write the previous frame.
+        fr = numpy.zeros(ofr.shape, dtype=numpy.uint8)
+        orig_fr = numpy.zeros(orig_ofr.shape, dtype=numpy.uint8)
 
         fr[:] = 255-ofr             # contiguity ...
         orig_fr[:] = orig_ofr
@@ -58,7 +59,7 @@ def showmotion(orig, src, paths, dest):
 
                 speed = 0
                 if len(pts) > 1:
-                    speed = numpy.hypot(*(pts[-1] - pts[-2]).T)
+                    speed = FPS*numpy.hypot(*(pts[-1] - pts[-2]).T)
                 speeds.append(speed)
                 txt = "%.2f (%.2f)" % (avg_speeds[p_idx], speed)
                 cv2.putText(f, txt, tup, cv2.FONT_HERSHEY_PLAIN, 1, (0,255,0))
