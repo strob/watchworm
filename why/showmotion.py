@@ -4,11 +4,14 @@ import numpy
 import cv2
 import pickle
 from jsonification import motion # this should be elsewhere ...
+from ruledcontour import getRule # "" ""
 
 def showmotion(orig, src, paths, dest):
     FPS = get_fps(orig)
 
     paths = pickle.load(open(paths))
+
+    CROP = getRule('crop', orig)
 
     # divide by number of frames
     # px/second
@@ -24,11 +27,13 @@ def showmotion(orig, src, paths, dest):
 
     for idx,ofr in enumerate(video_frames(src, height=None)):
         orig_ofr = orig_vf.next()
+        if CROP > 0:
+            orig_ofr = orig_ofr[CROP:-CROP,CROP:-CROP]
 
         if idx == 0:
             vout = VideoWriter(dest, ofr.shape)
             fr = numpy.zeros(ofr.shape, dtype=numpy.uint8)
-            orig_vout = VideoWriter(orig.replace('showmotion', 'origmotion'), orig_ofr.shape, {"fps": FPS})
+            orig_vout = VideoWriter(dest.replace('showmotion', 'origmotion'), orig_ofr.shape, {"fps": FPS})
             orig_fr = numpy.zeros(orig_ofr.shape, dtype=numpy.uint8)
 
 
@@ -66,7 +71,7 @@ def showmotion(orig, src, paths, dest):
                     tup = tuple(pts[-1].astype(int).tolist())
                     cv2.circle(f, tup, 3, (0, 0, 255))
 
-            txt = "%.2f (%.2f), N=%d" % (avg_speed, sum(speeds)/len(speed), len(paths))
+            txt = "%.2f (%.2f), N=%d" % (avg_speed, sum(speeds)/len(speeds), len(paths))
             cv2.putText(f, txt, (30,30), cv2.FONT_HERSHEY_PLAIN, 1, (255,0,255))
 
             vo.write(f)

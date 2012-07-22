@@ -17,7 +17,7 @@ data/%.avi.contours.pkl: ruledcontour.py data/%.avi
 	python $^ $@
 
 PATHS = $(patsubst %,%.path.pkl,$(RECORDINGS))
-data/%.avi.paths.pkl: paths.py data/%.avi.contours.pkl data/%.avi.contours.png
+data/%.avi.path.pkl: paths.py data/%.avi.contours.pkl data/%.avi.contours.png
 	python $^ $@
 
 MOT = $(patsubst %,%.showmotion.webm,$(RECORDINGS))
