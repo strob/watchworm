@@ -28,6 +28,10 @@ JSONS = Recording.json
 $(JSONS) : jsonification.py $(RECORDINGS) $(PATHS)
 	python $^ $@
 
+CSV = Path.json
+$(CSV) : makecsv.py Path.json
+	python $^ $@
+
 GEN = $(COMPOSITES) $(CONTOURS) $(MOT) \
       $(JSONS) $(FIRSTFRAMES) $(WEBMS) \
       $(PATHS)
