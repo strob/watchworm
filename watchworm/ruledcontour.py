@@ -1,8 +1,6 @@
 import cv2
-from cvframes import video_frames
 from numpy import array, uint8, zeros, save
-from numm import np2image
-from numm.video import VideoWriter
+from util import np2image, VideoWriter, VideoReader
 import json
 import pickle
 import os
@@ -25,7 +23,7 @@ def contours(src, dst):
 
     merge = []
 
-    for idx,fr in enumerate(video_frames(src, height=None)):
+    for idx,fr in enumerate(VideoReader(src)):
         if CROP > 0:
             fr = fr[CROP:-CROP,CROP:-CROP]
 
@@ -48,7 +46,7 @@ def contours(src, dst):
         fr = cv2.dilate(fr, None, iterations=DILATION)
 
         if idx == 0:
-            video = VideoWriter(dst.replace('.pkl', '.webm'), fr.shape)
+            video = VideoWriter(dst.replace('.pkl', '.avi'))
             vfr = zeros((fr.shape[0],fr.shape[1],3), uint8)
             np2image(fr, dst.replace('.pkl', '.png'))
 
@@ -58,7 +56,6 @@ def contours(src, dst):
         contours, hierarchy = cv2.findContours(fr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         acc.append(contours)
 
-    video.close()
     pickle.dump(acc, open(dst, 'w'))
 
 if __name__=='__main__':

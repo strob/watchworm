@@ -3,7 +3,7 @@
 import pickle
 import cv2
 import numpy
-from numm import image2np, np2image
+from util import image2np, np2image
 
 MIN_AREA = 15
 MAX_DIST = 0.1                  # percentage of area

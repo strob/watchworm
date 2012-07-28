@@ -1,8 +1,7 @@
-from numm import np2image
-from cvframes import video_frames
+from util import VideoReader, np2image
 
 def first(src, dst):
-    vf = video_frames(src, height=None)
+    vf = VideoReader(src)
     fr = vf.next()
     np2image(fr, dst)
 

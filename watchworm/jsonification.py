@@ -3,7 +3,7 @@ import json
 import os
 import pickle
 import numpy
-from cvframes import get_fps
+from util import get_fps
 
 rec = {}
 allpaths = {}
