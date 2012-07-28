@@ -57,8 +57,8 @@ def path(src, dest):
                 _matched.add(p_idx)
                 paths[p_idx].append(ctr)
             else:
-                # Stray contour: make new and see what happens?
-                pass
+                # Stray contour: make new and see what happens
+                paths.append([ctr])
 
     # prune short paths
     plens = [len(x) for x in paths]

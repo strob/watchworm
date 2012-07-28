@@ -35,7 +35,7 @@ if __name__=='__main__':
 
             distance = numpy.hypot(*(arr[0,:2] - arr[-1,:2]))
 
-            avg_speed = FPS*amnt_motion / float(arr[-1,-1]) # px/sec
+            avg_speed = FPS*amnt_motion / float(arr[-1,-1] - arr[0,-1]) # px/sec
 
             uid = '%s-%d' % (base, idx)
             doc = {"recording": base,
