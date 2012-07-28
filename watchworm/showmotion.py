@@ -14,7 +14,7 @@ def showmotion(src, paths, dest):
 
     # divide by number of frames
     # px/second
-    avg_speeds = [FPS*motion(y)/paths[idx][-1][0][-1] for idx,(x,y) in enumerate(paths)]
+    avg_speeds = [FPS*motion(y)/(paths[idx][0][-1][4]-paths[idx][0][0][4]) for idx,(x,y) in enumerate(paths)]
     avg_speed = sum(avg_speeds) / len(avg_speeds)
 
     fr = None
@@ -39,8 +39,6 @@ def showmotion(src, paths, dest):
             tup = tuple(raw[-1,:2].astype(int).tolist())
             cv2.circle(fr, tup, raw[-1,2].astype(int), (255, 0, 0))
             cv2.circle(fr, tup, 3, (255, 0, 0))
-
-            print tup
 
             speed = 0
             if len(pts) > 1:

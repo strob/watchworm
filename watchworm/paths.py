@@ -14,6 +14,10 @@ def smooth(path):
     window = window / window.sum()
     y = numpy.convolve(path[:,0], window, mode='valid')
     x = numpy.convolve(path[:,1], window, mode='valid')
+
+    # Include first and last point
+    y = numpy.concatenate([[path[0,0]],y,[path[-1,0]]])
+    x = numpy.concatenate([[path[0,1]],x,[path[-1,1]]])
     return numpy.array([y,x]).T
 
 def path(src, dest):
