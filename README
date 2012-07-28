@@ -1,53 +1,40 @@
-meteor/opencv-based worm tracking.
+worm tracking & motion analysis
 
-the user-interface is implemented in javascript through meteor,
-while the analysis is undertaken server-side in python and opencv,
-using mongodb as a common layer between. they are split into
-the `watch' and `worms' components, respectively.
+== usage
 
-we maintain several database collections:
+1. put avi's in a data/ directory
 
-`recording'
- - name
- - filename
+2. copy RULES.sample.json to RULES.json and adjust as needed
 
-several one-to-one supplements to the recording:
-
-`preview'
- - recording
- - preview                      # base64-encoded PNG at time0 
-
-`composite'
- - recording
- - composite                    # average frame
-
-a many-to-one relation of worms to recording:
-
-`worm'
- - recording
- - name
- - bb                           # [x,y,w,h] (at time0)
- - amountOfMotion               # px
- - avgSpeed                     # px/second
-
-and several one-to-one mappings to worms:
-
-`contourFlow'
- - worm
- - contourFlow                  # [[x,y], ...] (8kb/frame)
-
-`centerFlow'
- - worm
- - centerFlow                   # [[x,y], ...]
+3. make all
 
 
-finally, we use mongodb as a poor-man's message queue to communicate
-between meteor/javascript and python, through a `request' collection:
-(NB: celerymq seems to support mongodb as a backend -- consider its use?)
+== wishlist
 
-`request':
- - started                      # starts False
- - status
- - finished                     # also initialized to False
- - payload                      # information passed to python
++ [ok] Allow worms that go on or off the screen; use for speed, if not distance.
 
++ Express distance/speed as a proportion of length (diameter)
+
++ Two worms in a single circle ?! How to deal with occlusion
+
++ How to characterize motion?
+
++ Add standard deviation
+
+- [ok] Kill the rest of the codebase
+
+- Make a CLI utility instead of using Makefiles
+
+- [ok] Drop numm dependency
+  - (TODO) convert all functions to be generator-based
+  - [ok] use opencv to serialize to/from avi
+
+- Generate test worm patterns to develop new features
+  - [ok] basic
+  - [ok] start off screen
+  - worm shape
+  - occlusion
+
+- Clean & consolidate feature extraction code
+
+- "Fix" (or kill) web interface
