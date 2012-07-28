@@ -32,6 +32,10 @@ def showmotion(src, paths, dest):
             raw = filter(lambda x: x[4] <= idx, raw)
             smooth = smooth[:max(0,len(raw)-5)]
 
+            if len(raw) == 0:
+                print idx, 'path has not yet started'
+                continue
+
             raw = numpy.array(raw)
             pts = raw[:,:2].astype(numpy.int32)
             cv2.polylines(fr, [pts], False, (255, 0, 0))
