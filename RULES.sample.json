@@ -1,6 +1,6 @@
 {"default": {
-    "threshold": 125,
-    "reversed": true,
+    "threshold": 60,
+    "reversed": false,
     "blur": 2,
     "merge": 2,
     "dilation": 2,
@@ -8,4 +8,5 @@
 },
  "name_of_video.avi": {
      "threshold": 35,
-     "reversed": false}}
+     "reversed": false}
+}
