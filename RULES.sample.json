@@ -7,6 +7,6 @@
     "crop": 0
 },
  "name_of_video.avi": {
-     "threshold": 35,
-     "reversed": false}
+     "threshold": 35
+ }
 }
