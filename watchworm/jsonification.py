@@ -9,16 +9,16 @@ from quantification import *
 rec = {}
 allpaths = {}
 
-if __name__=='__main__':
-    videos = filter(lambda x: x.index('.avi') == len(x)-4, glob.glob('data/*.avi'))
-    for f in videos:
+def jsonify(inputdir, outputdir):
+    for f in glob.glob(os.path.join(inputdir, '*.avi')):
+        outbase = os.path.join(outputdir, os.path.basename(f))
 
         FPS = get_fps(f)
 
         base = os.path.basename(f)
         rec[base] = {"filename": os.path.basename(f)}
 
-        paths = pickle.load(open('%s.path.pkl' % (f)))
+        paths = pickle.load(open('%s.path.pkl' % (outbase)))
         docs = []
 
         store = allpaths
@@ -54,6 +54,8 @@ if __name__=='__main__':
 
         rec[base].update(recinfo)
 
-    import pdb; pdb.set_trace()
     json.dump(allpaths, open("Path.json", 'w'))
     json.dump(rec, open("Recording.json", 'w'))
+
+if __name__=='__main__':
+    jsonify('data')

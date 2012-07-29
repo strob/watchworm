@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+import argparse
+import glob
+import shutil
+import os
+
+from watchworm.first_frame import first
+from watchworm.ruledcontour import contours
+from watchworm.paths import path
+from watchworm.showmotion import showmotion
+from watchworm.jsonification import jsonify
+from watchworm.makecsv import makecsv
+
+parser = argparse.ArgumentParser(
+    description='CLI utility for watchworm')
+parser.add_argument('action', default='all', help='[all | clean]')
+args = parser.parse_args()
+
+def die(msg):
+    print msg
+    import sys
+    sys.exit(1)
+
+if args.action == 'all':
+    if not os.path.isdir('output'):
+        os.makedirs('output')
+    if not os.path.isdir('input'):
+        die('No directory named `input` found.')
+    files = glob.glob('input/*.avi')
+    for base in files:
+        outbase = base.replace('input/', 'output/')
+        firstframe =outbase+'.path.png' 
+        if not os.path.exists(firstframe):
+            first(base, firstframe)
+        contourpath =outbase+'.contours.pkl'
+        if not os.path.exists(contourpath):
+            contours(base, contourpath)
+        pathspath = outbase+'.path.pkl'
+        if not os.path.exists(pathspath):
+            path(contourpath, pathspath)
+        motionpath = outbase+'.motion.avi'
+        if not os.path.exists(motionpath):
+            showmotion(base, 
+                       pathspath,
+                       motionpath)
+    jsonify('input', 'output')
+    makecsv()
+
+elif args.action == 'clean':
+    shutil.rmtree('output')
+else:
+    die('Action not understood.')

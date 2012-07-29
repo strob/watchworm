@@ -2,11 +2,11 @@ worm tracking & motion analysis
 
 == usage
 
-1. put avi's in a data/ directory
+1. put avi's in an input/ directory
 
 2. copy RULES.sample.json to RULES.json and adjust as needed
 
-3. make all
+3. watchworm all
 
 
 == wishlist
@@ -23,7 +23,10 @@ worm tracking & motion analysis
 
 - [ok] Kill the rest of the codebase
 
-- Make a CLI utility instead of using Makefiles
+- [ok] Make a CLI utility instead of using Makefiles
+  `input' and `output' directories
+  - [ok] all
+  - [ok] clean
 
 - [ok] Drop numm dependency
   - (TODO) convert all functions to be generator-based
