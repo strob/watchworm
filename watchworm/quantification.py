@@ -6,6 +6,23 @@ def distance(path):
     path = np.array(path)
     return np.hypot(*(path[0,:2] - path[-1,:2]))
 
+def angles(path):
+    "angles between each point and the next"
+    path = np.array(path)
+    dists = path[1:,:2] - path[:-1,:2]
+    return np.arctan2(*dists.T)
+
+def circularity(path):
+    "total amount of rotation: sum of magnitude of differential angles."
+    a = angles(path)
+    d_a = a[1:] - a[:-1]
+    return sum(abs(d_a))
+
+def relativeCircularity(paths):
+    "circularity per length-of-worm traveled."
+    c = circularity(paths[1])
+    return c / relativeMotion(paths)
+
 def motion(path):
     path = np.array(path)
     dists = path[1:,:2] - path[:-1,:2]

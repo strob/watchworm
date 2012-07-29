@@ -34,7 +34,9 @@ def jsonify(inputdir, outputdir):
                    "distance (px)": distance(path),
                    "speed (px/sec)": speed([path,smoothed], FPS),
                    "rel_motion (% of length)": relativeMotion([path,smoothed]),
-                   "rel_speed (%/sec)": relativeSpeed([path,smoothed], FPS)
+                   "rel_speed (%/sec)": relativeSpeed([path,smoothed], FPS),
+                   "circularity (radians)": circularity(smoothed),
+                   "rel_circularity (radians/%-of-length)": relativeCircularity([path,smoothed])
                }
             docs.append(doc)
             store[uid] = doc
