@@ -1,12 +1,25 @@
 worm tracking & motion analysis
 
 == usage
+0. install:
+
+ubuntu:
+% sudo python setup.py install
+
+windows:
+> C:\Python26\python.exe setup.py install
 
 1. put avi's in an input/ directory
 
 2. copy RULES.sample.json to RULES.json and adjust as needed
 
-3. watchworm all
+3. run analysis!
+
+ubuntu:
+% watchworm all
+
+windows:
+> C:\Python26\python.exe bin\watchworm all
 
 
 == wishlist
@@ -40,4 +53,4 @@ worm tracking & motion analysis
 
 - Clean & consolidate feature extraction code
 
-- "Fix" (or kill) web interface
+- [killed] "Fix" (or kill) web interface
