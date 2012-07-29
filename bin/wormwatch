@@ -11,6 +11,7 @@ from watchworm.paths import path
 from watchworm.showmotion import showmotion
 from watchworm.jsonification import jsonify
 from watchworm.makecsv import makecsv
+from watchworm.circularity import circularity
 
 parser = argparse.ArgumentParser(
     description='CLI utility for watchworm')
@@ -39,6 +40,9 @@ if args.action == 'all':
         pathspath = outbase+'.path.pkl'
         if not os.path.exists(pathspath):
             path(contourpath, pathspath)
+        circlespath = outbase + '.circ.png'
+        if not os.path.exists(circlespath):
+            circularity(pathspath, circlespath)
         motionpath = outbase+'.motion.avi'
         if not os.path.exists(motionpath):
             showmotion(base, 
