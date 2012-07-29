@@ -60,10 +60,9 @@ def showmotion(src, paths, dest):
                 tup = tuple(pts[-1].astype(int).tolist())
                 cv2.circle(fr, tup, 3, (0, 0, 255))
 
-            txt = "%.2f (%.2f), N=%d" % (avg_speed, sum(speeds)/len(speeds), len(paths))
-            cv2.putText(fr, txt, (30,30), cv2.FONT_HERSHEY_PLAIN, 1, (255,0,255))
-
-            vout.write(fr)            
+        txt = "%.2f (%.2f), N=%d" % (avg_speed, sum(speeds)/len(speeds), len(paths))
+        cv2.putText(fr, txt, (30,30), cv2.FONT_HERSHEY_PLAIN, 1, (255,0,255))
+        vout.write(fr)
 
 if __name__=='__main__':
     import sys
