@@ -34,7 +34,7 @@ def showmotion(src, paths, dest):
             smooth = smooth[:max(0,len(raw)-5)]
 
             if len(raw) == 0:
-                print idx, 'path has not yet started'
+                # print idx, 'path has not yet started'
                 continue
 
             raw = numpy.array(raw)
