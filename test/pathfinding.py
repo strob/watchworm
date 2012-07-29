@@ -4,12 +4,12 @@ from watchworm.paths import path
 from watchworm.showmotion import showmotion
 
 def testCircle(base):
-    first(base, base+'.p.png')
-    contours(base, base+'.c.pkl')
-    path(base+'.c.pkl', base+'.p.pkl')
+    first(base, base+'.path.png')
+    contours(base, base+'.contour.pkl')
+    path(base+'.contour.pkl', base+'.path.pkl')
     showmotion(base, 
-               base+'.p.pkl',
-               base+'.m.avi')
+               base+'.path.pkl',
+               base+'.motion.avi')
 
 if __name__=='__main__':
     testCircle('data/circleAtSpeed100.avi')

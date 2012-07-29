@@ -2,8 +2,9 @@ from util import VideoWriter, VideoReader, get_fps
 import numpy
 import cv2
 import pickle
-from jsonification import motion # this should be elsewhere ...
-from ruledcontour import getRule # "" ""
+# XXX: Use quantification more heavily.
+from quantification import motion # this should be elsewhere ...
+from ruledcontour import getRule  # "" ""
 
 def showmotion(src, paths, dest):
     FPS = get_fps(src)

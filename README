@@ -13,13 +13,13 @@ worm tracking & motion analysis
 
 + [ok] Allow worms that go on or off the screen; use for speed, if not distance.
 
-+ Express distance/speed as a proportion of length (diameter)
++ [ok] Express distance/speed as a proportion of length (diameter)
 
 + Two worms in a single circle ?! How to deal with occlusion
 
 + How to characterize motion?
 
-+ Add standard deviation
++ [ok] Add standard deviation
 
 - [ok] Kill the rest of the codebase
 
