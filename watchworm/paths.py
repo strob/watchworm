@@ -9,6 +9,8 @@ MIN_AREA = 15
 MAX_DIST = 0.1                  # percentage of area
 SMOOTHING_WINDOW_LEN = 25
 
+MIN_NFRAMES = 100               # Otherwise path is considered too-short.
+
 def smooth(path):
     window = numpy.kaiser(SMOOTHING_WINDOW_LEN, 4)
     window = window / window.sum()
@@ -65,9 +67,7 @@ def path(src, dest):
                 paths.append([ctr])
 
     # prune short paths
-    plens = [len(x) for x in paths]
-    mplen = max(plens)
-    paths = filter(lambda x: len(x) > mplen/3, paths)
+    paths = filter(lambda x: len(x) > MIN_NFRAMES, paths)
 
     # smooth paths
     smoothed = [smooth(numpy.array(X)) for X in paths]
