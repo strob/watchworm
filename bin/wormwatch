@@ -31,7 +31,7 @@ if args.action == 'all':
     files = glob.glob('input/*.avi')
     for base in files:
         outbase = base.replace('input/', 'output/')
-        firstframe =outbase+'.path.png' 
+        firstframe =outbase+'.first.png' 
         if not os.path.exists(firstframe):
             first(base, firstframe)
         contourpath =outbase+'.contours.pkl'
