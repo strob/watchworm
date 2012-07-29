@@ -9,7 +9,7 @@ distutils.core.setup(
     author='Robert M Ochshorn',
     author_email='mail@RMOZONE.COM',
     packages=['watchworm'],
-    scripts=['bin/wormwatch'],
+    scripts=['bin/wormwatch.py'],
     classifiers=[
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",

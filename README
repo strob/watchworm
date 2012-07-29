@@ -16,10 +16,10 @@ windows:
 3. run analysis!
 
 ubuntu:
-% watchworm all
+% watchworm.py all
 
 windows:
-> C:\Python26\python.exe bin\watchworm all
+> C:\Python26\Scripts\watchworm.py all
 
 
 == wishlist
