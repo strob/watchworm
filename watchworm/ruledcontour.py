@@ -38,9 +38,6 @@ def contours(src, dst):
         if BLUR > 0:
             cv2.blur(fr, (BLUR, BLUR), fr)
 
-        if idx == 0:
-            save("r1.npy", fr)
-
         fr = 255*(fr>THRESH).astype(uint8)
 
         fr = cv2.dilate(fr, None, iterations=DILATION)
