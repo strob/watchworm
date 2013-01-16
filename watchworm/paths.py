@@ -72,7 +72,7 @@ def path(src, dest):
     # smooth paths
     smoothed = [smooth(numpy.array(X)) for X in paths]
 
-    print 'trimmed %d paths to %d' % (len(plens), len(paths))
+    # print 'trimmed %d paths to %d' % (len(plens), len(paths))
 
     # save a preview PNG
     fr = 255 - image2np(dest.replace('path', 'contours').replace('.pkl', '.png'))
